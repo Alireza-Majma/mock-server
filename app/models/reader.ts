@@ -6,7 +6,7 @@ export class Reader {
 
     static BuildItem(obj): Reader {
         return {
-            readerID: obj.readerD,
+            readerID: obj.readerID,
             name: obj.name,
             weeklyReadingGoal: obj.weeklyReadingGoal,
             totalMinutesRead: obj.totalMinutesRead
