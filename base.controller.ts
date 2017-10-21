@@ -71,32 +71,19 @@ export default class BaseController {
         }
     }
     updateDataById(req, res, id, newObj, errorMessage = "Update By Id Failed") {
-        try {
-            const data = this.getData();
-            const pos = data.findIndex(x => x[this.idName] === id);
-
-            if (pos > -1) {
-                data[pos] = Object.assign(data[pos], newObj);
-                data[pos][this.idName] = id;
-                this.saveData(data);
-                this.onSuccess(res, pos);
-            } else {
-                this.onError(res, errorMessage, 'Record not found');
-            }
-        } catch (error) {
-            this.onError(res, errorMessage, error);
-        }
+        newObj[this.idName] = id;
+        this.addData(req, res, newObj, errorMessage);
     }
+    
     deleteDataById(req, res, id, errorMessage = "Delete By Id Failed") {
         try {
             const data = this.getData();
-            const pos = data.findIndex(x => x[this.idName] === id);
+            let pos = data.findIndex(x => x[this.idName] === id);
 
-            if (pos > -1) {
+            while (pos > -1) {
                 data.splice(pos, 1);
-            } else {
-                res.sendStatus(404);
-            }
+                pos = data.findIndex(x => x[this.idName] === id);
+            } 
             this.saveData(data);
             this.onSuccess(res, pos);
         } catch (error) {
@@ -106,7 +93,17 @@ export default class BaseController {
     addData(req, res, newObj, errorMessage = "Add data Failed") {
         try {
             const data = this.getData();
-            newObj[this.idName] = this.getNextAvailableID(data);
+            var id = newObj[this.idName];
+            if (id) {
+                // try to delete any item with this id
+                let pos = data.findIndex(x => x[this.idName] === id);
+                while (pos > -1) {
+                    data.splice(pos, 1);
+                    pos = data.findIndex(x => x[this.idName] === id);
+                }
+            } else{
+                newObj[this.idName] = this.getNextAvailableID(data);
+            }
             data.push(newObj);
             this.saveData(data);
             this.onSuccess(res, newObj);
@@ -141,7 +138,7 @@ export default class BaseController {
         app.route(`/api/${modelName}s`)
             .post((req, res) => this.addData(req, res, model.BuildItem(req.body), `Add ${modelName} Failed`));
         app.route(`/api/arrange/${modelName}s`)
-            .post((req, res) => this.arrangeData(req, res, model,req.body, `Arrange ${modelName} Failed`));
+            .post((req, res) => this.arrangeData(req, res, model, req.body, `Arrange ${modelName} Failed`));
 
         BaseController.restPath[modelName + ' Controller'] = [
             `get     => /api/${modelName}s  ,Find All ${modelName}`,
@@ -153,7 +150,7 @@ export default class BaseController {
         ];
     }
 
-    static initControllers(app: express.sApplication, folderModel = "./app/models",folderData = "./data/") {
+    static initControllers(app: express.sApplication, folderModel = "./schema", folderData = "./data/") {
         BaseController.controllers = BaseController.controllers || [];
         BaseController.restPath = BaseController.restPath || {};
         const startFolder = path.basename(folderModel);
@@ -168,7 +165,7 @@ export default class BaseController {
                 const model = require(path.join(__dirname, fullName));
                 for (const p in model) {
                     const modelName = model[p].name;
-                    if (typeof model[p] === "function" && fullName.toLowerCase().indexOf(modelName.toLowerCase()) > -1 ) {
+                    if (typeof model[p] === "function" && fullName.toLowerCase().indexOf(modelName.toLowerCase()) > -1) {
                         if (BaseController.controllers.filter(c => c === modelName).length > 0) {
                             console.log(`Controller "${p}" allready loaded , file name: ${fullName} `);
                         } else {

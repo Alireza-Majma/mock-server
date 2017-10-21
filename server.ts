@@ -7,7 +7,7 @@ import * as favicon from "serve-favicon";
 import * as logger from "morgan";
 import * as cookieParser from "cookie-parser";
  import * as cors from "cors";
-
+const corsOrigin = '"http://localhost:/4200"';
 const port = '8808';
 const app: express.Application = express();
 app.set('views', path.join(__dirname, '/views'));
@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
 const corsOption: cors.CorsOptions = {
-    origin: "http://localhost:" + app.get('port'),
+    origin: corsOrigin,
     credentials: true,
     methods: 'GET,PUT,POST,DELETE,HEAD,OPTIONS'
 };
@@ -35,7 +35,7 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
     next();
 });
 
-BaseController.initControllers(app,"./app/models","./data/");
+BaseController.initControllers(app,"./schema","./data/");
 
 app.use((err: express.ErrorRequestHandler, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.log("API Error Hanler trigered", err);
