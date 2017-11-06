@@ -1,0 +1,37 @@
+[
+    {
+        "id": 1,
+        "name": "Alireza Majma",
+        "password": "0",
+        "email": "alireza@newsvine.com",
+        "description": "Developer"
+    },
+    {
+        "id": 2,
+        "name": "Rob MArtin",
+        "password": "0",
+        "email": "martin@newsvine.com",
+        "description": "another Developer"
+    },
+    {
+        "id": 3,
+        "name": "peter Jhonson",
+        "password": "0",
+        "email": "peter@newsvine.com",
+        "description": "new Developer"
+    },
+    {
+        "id": 4,
+        "name": "jhon peters",
+        "password": "abcd",
+        "email": "user4@newsvine.com",
+        "description": "It has a password new Developer"
+    },
+    {
+        "id": 5,
+        "name": "Nadia pasandid",
+        "password": "$2a$10$HcB6BoA1zWZ8u4kFpB0n/.erHEA8e8vUVijmmRwwDMdO2OaqT121S",
+        "email": "nadia@newsvine.com",
+        "description": "she is test user  has a password = 123"
+    }
+]
